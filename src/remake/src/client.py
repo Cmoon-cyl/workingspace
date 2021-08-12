@@ -30,6 +30,5 @@ class Main:
 if __name__ == '__main__':
     try:
         Main('send_num')
-        rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("Keyboard interrupt.")
