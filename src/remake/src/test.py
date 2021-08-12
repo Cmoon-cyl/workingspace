@@ -4,7 +4,7 @@
 import rospy
 
 
-class Main():
+class Main:
     def __init__(self, name):
         rospy.init_node(name)
 
