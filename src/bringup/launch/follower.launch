@@ -1,0 +1,11 @@
+<launch>
+	<node name="HL_move_base" pkg="headless_move_base" type="headless_move_base" output="screen" />
+	
+	<node name="user_tracker_laser" pkg="user_tracker" type="user_tracker_laser" output="screen" />
+	<node name="user_footprint" pkg="user_tracker" type="user_footprint" output="screen" />
+	<node name="tf_base2laser" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_footprint laser 20" output="screen" />
+
+	<node name="sound_master" pkg="sound_play" type="soundplay_node.py" output="screen" />
+	<!--<node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find bringup)/rviz/follower.rviz" respawn="true"/>-->
+	<!--<node name="user_trackerNEO" pkg="user_tracker" type="user_trackNEO" output="screen" />-->
+</launch>

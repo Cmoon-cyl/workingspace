@@ -1,0 +1,8 @@
+<launch>
+  <node name="tf_base_footprint2laser" pkg="tf" type="static_transform_publisher" args="0.18 0 0 0 0 0 base_footprint laser 20" output="screen" />
+  <include file="$(find ground_segmentation)/launch/tiny_obstacle_detect.launch"/>
+  <include file="$(find bringup)/launch/includes/move_base.launch.xml"/>
+  <include file="$(find bringup)/launch/gmap2.launch"/>
+  <node name="sound_master" pkg="sound_play" type="soundplay_node.py" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bringup)/rviz/navigation.rviz" required="true" />
+</launch>

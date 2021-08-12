@@ -1,0 +1,14 @@
+<launch>
+  <include file="$(find ground_segmentation)/launch/tiny_obstacle_detect.launch"/>
+  <arg name="map_file" default="/home/ros/data/10091930.bag.edited.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_a" default="0.0"/>
+
+  <include file="$(find bringup)/launch/includes/move_base.launch.xml"/>
+	<node name="tf_base_footprint2laser" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_footprint laser 20" output="screen" />
+	<node name="tf_map2odom" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 map odom 20" output="screen" />
+	<node name="sound_master" pkg="sound_play" type="soundplay_node.py" />
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+		<node name="tf_base_footprint2laser" pkg="tf" type="static_transform_publisher" args="0.2 0 0 0 0 0 base_footprint laser 20" output="screen" />
+    <include file="$(find ground_segmentation)/launch/tiny_obstacle_detect.launch"/>
+</launch>

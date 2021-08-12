@@ -1,0 +1,9 @@
+<launch>
+  <include file="$(find ground_segmentation)/launch/tiny_obstacle_detect.launch"/>
+  <include file="$(find bringup)/launch/amcl.launch"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bringup)/rviz/navigation.rviz"  respawn="true"/> 
+  <!--
+  <node name="sound_master" pkg="sound_play" type="soundplay_node.py" />
+  -->
+
+</launch>
