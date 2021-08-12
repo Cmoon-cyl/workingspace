@@ -14,7 +14,7 @@ class Turtle:
         rospy.Subscriber('/turtle1/pose', Pose, self.control)  # 实例化订阅者，参数为订阅的话题名，消息类型，回调函数
         self.pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)  # 实例化发布者，参数为发布的话题名，消息类型，队列长度
         self._graph = graph
-        self.size = 5  # 图形的大小
+        self.size = 5  # 图形的大小(3-5)
         self.kp1 = 6  # 走直线的比例控制参数
         self.kp2 = 4  # 转角度的比例控制参数
         self.kd = 10  # 走直线的微分控制参数
@@ -59,14 +59,12 @@ class Turtle:
                           'tri_60': [[pose.x, pose.y, pose.theta],
                                      [pose.x + size, pose.y, math.pi * 2 / 3],
                                      [pose.x + size / 2, pose.y + (size / 2 * math.tan(math.pi / 3)),
-                                      pose.theta - math.pi * 2 / 3],
-                                     [pose.x, pose.y, pose.theta]
+                                      pose.theta - math.pi * 2 / 3]
                                      ],
 
                           'tri_90': [[pose.x, pose.y, 0],
                                      [pose.x + size, pose.y, math.pi / 2],
                                      [pose.x + size, pose.y + size, -3 * math.pi / 4],
-                                     [pose.x, pose.y, 0]
                                      ],
                           }
             self.key += 1
@@ -86,7 +84,7 @@ class Turtle:
         """寻找现在距离哪个点最近"""
         # 计算现在坐标和其他所有目标点的距离，传入distance列表
         distance = [math.sqrt((self.x - self.point[graph][i][0]) ** 2 + (self.y - self.point[graph][i][1]) ** 2) for i
-                    in range(4)]
+                    in range(len(self.point[graph]))]
         closest_point = distance.index(min(distance))  # 获取列表中最小的点的索引
         return closest_point
 
