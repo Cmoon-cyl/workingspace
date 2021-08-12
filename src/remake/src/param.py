@@ -7,6 +7,7 @@ import rospy
 class Main:
     def __init__(self, name):
         rospy.init_node(name)
+        rospy.init_node(name)
 
 
 if __name__ == '__main__':
