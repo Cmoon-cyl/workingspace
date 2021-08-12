@@ -1,16 +1,16 @@
-#!/usr/bin/env python3
-# coding: utf-8
+#!/usr/bin/env python
+# coding: UTF-8 
 
 import rospy
 
 
 class Main:
     def __init__(self, name):
-        rospy.init_node(name)
+        rospy.init_node(name, anonymous=True)
 
 
 if __name__ == '__main__':
     try:
-        Main('send_num')
+        Main('name')
     except rospy.ROSInterruptException:
-        rospy.loginfo("Keyboard interrupt.")
+        pass

@@ -11,7 +11,7 @@ from torch.cuda import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 
-import test  # import test.py to get mAP after each epoch
+import test  # import param.py to get mAP after each epoch
 from models.yolo import Model
 from utils import google_utils
 from utils.datasets import *
