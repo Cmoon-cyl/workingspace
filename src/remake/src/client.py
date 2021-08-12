@@ -3,16 +3,26 @@
 
 import rospy
 from cmoon_msgs.srv import cmoon, cmoonRequest, cmoonResponse
+import sys
 
 
 class Main:
     def __init__(self, name):
         rospy.init_node(name, anonymous=True)
-        send_sum = rospy.ServiceProxy('add', cmoon)
-        try:
-            rospy.wait_for_service('add', timeout=5)
-        except rospy.ROSException:
-            print('Service done.')
+        client = rospy.ServiceProxy('add', cmoon)
+        client.wait_for_service(timeout=5)
+        rospy.loginfo('Request completed.')
+        if len(sys.argv) == 3:
+            num1 = int(sys.argv[1])
+            num2 = int(sys.argv[2])
+            response = client.call(num1, num2)
+            print(response.sum)
+        else:
+            while not rospy.is_shutdown():
+                num1 = int(input('num1: '))
+                num2 = int(input('num2: '))
+                response = client.call(num1, num2)
+                print(response.sum)
 
         # num = cmoonRequest(1, 2)
         # sum = send_sum(num)
@@ -21,10 +31,6 @@ class Main:
         # num.num1 = 4
         # num.num2 = 5
         # sum = send_sum(num)
-
-        sum = send_sum(3, 7)
-
-        print(sum.sum)
 
 
 if __name__ == '__main__':

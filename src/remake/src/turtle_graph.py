@@ -121,7 +121,6 @@ class Turtle:
 
 if __name__ == '__main__':
     try:
-
         Turtle('turtle_graph', input('Input graph(square or tri ir rec): '))  # 实例化Turtle，传入初始化的节点名
         rospy.spin()  # 循环监听callback
     except rospy.ROSInterruptException:
