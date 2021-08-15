@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
+# Created by Cmoon
 
 import math
 import rospy
@@ -130,7 +131,7 @@ class Turtle:
 
 if __name__ == '__main__':
     graph_list = ['squ', 'rec', 'tri_60', 'tri_90']
-    if len(sys.argv) == 2 and sys.argv[1] in graph_list:  # 实现rosrun xx yy.py squ直接跑对应图形
+    if sys.argv[1] in graph_list:  # 实现rosrun xx yy.py squ直接跑对应图形
         command = sys.argv[1]
     else:
         command = input('Please input graph name(squ tri_60 tri_90 rec): ')  # 没在命令输对图形名称时提示输入
