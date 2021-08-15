@@ -1,33 +1,36 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 # coding: utf-8
 # Created by Cmoon
 
 import math
 import rospy
 import sys
-from turtlesim.msg import Pose  # Pose数据类型包含乌龟的坐标和角度
+from nav_msgs.msg import Odometry  # Pose数据类型包含机器人的坐标和角度
 from geometry_msgs.msg import Twist  # Twist数据类型包含线速度和角速度
+from tf import transformations as ts
 
 
 class Turtle:
     def __init__(self, name, graph):
         rospy.init_node(name)  # 初始化节点
-        rospy.Subscriber('/turtle1/pose', Pose, self.control)  # 实例化订阅者，参数为订阅的话题名，消息类型，回调函数
-        self.pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)  # 实例化发布者，参数为发布的话题名，消息类型，队列长度
+        rospy.Subscriber('/odom', Odometry, self.control)  # 实例化订阅者，参数为订阅的话题名，消息类型，回调函数
+        self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)  # 实例化发布者，参数为发布的话题名，消息类型，队列长度
         self._graph = graph
-        self.size = 5  # 图形的大小(3-5)
-        self.kp1 = 6  # 走直线的比例控制参数
-        self.kp2 = 4  # 转角度的比例控制参数
-        self.kd = 10  # 走直线的微分控制参数
-        self.aim = 0.025  # 直走的误差值
-        self.aim_rotate = 0.008  # 转弯的误差值
+        self.size = 2  # 图形的大小(3-5)
+        self.kp1 = 0.5  # 走直线的比例控制参数
+        self.kp2 = 1  # 转角度的比例控制参数
+        self.kd = 0.5  # 走直线的微分控制参数
+        self.aim_line = 0.03  # 直线的误差值
+        self.aim_rotate = 0.01  # 转弯的误差值
         self.vel_cmd = Twist()  # 实例化Twist消息类型的消息
         self.point = {}  # 储存所走路径目标点
-        self.x = None  # 乌龟目前所在x坐标
-        self.y = None  # 乌龟目前所在y坐标
-        self.theta = None  # 乌龟目前角度
-        self.goal = None  # 乌龟下一个要到达的目标点
+        self.x = None  # 机器人目前所在x坐标
+        self.y = None  # 机器人目前所在y坐标
+        self.theta = None  # 机器人目前角度
+        self.goal = None  # 机器人下一个要到达的目标点
         self.error = None  # 现在距离目标点的误差值
+        self.quaternion = None  # 机器人的四元数
+        self.euler = None  # 机器人的欧拉角
         self.flag = 0  # flag和lock实现走直线和转角度的互锁，执行完一个才能执行另一个
         self.lock = 0
         self.key = 0
@@ -41,43 +44,48 @@ class Turtle:
         self.set_goal_points(pose, self.size)
         rospy.loginfo(self.point['squ'][0][0])
         self.get_present_point(pose)
-        self.go_graph(graph, self.kp1, self.kp2, self.kd, self.aim)
+        self.go_graph(graph, self.kp1, self.kp2, self.kd, self.aim_line)
 
     def set_goal_points(self, pose, size=5):
         """设定不同形状的目标点，坐标和角度"""
         if self.key == 0:  # 只设定一次
-            self.point = {'squ': [[pose.x, pose.y, 0],
-                                  [pose.x + size, pose.y, math.pi / 2],
-                                  [pose.x + size, pose.y + size, math.pi],
-                                  [pose.x, pose.y + size, - math.pi / 2]
+            self.point = {'squ': [[pose.pose.pose.position.x, pose.pose.pose.position.y, 0],
+                                  [pose.pose.pose.position.x + size, pose.pose.pose.position.y, math.pi / 2],
+                                  [pose.pose.pose.position.x + size, pose.pose.pose.position.y + size, math.pi],
+                                  [pose.pose.pose.position.x, pose.pose.pose.position.y + size, - math.pi / 2]
                                   ],
 
-                          'rec': [[pose.x, pose.y, pose.theta],
-                                  [pose.x + 5, pose.y, pose.theta + math.pi / 2],
-                                  [pose.x + 5, pose.y + 3, pose.theta + math.pi],
-                                  [pose.x, pose.y + 3, pose.theta - math.pi / 2]
+                          'rec': [[pose.pose.pose.position.x, pose.pose.pose.position.y, 0],
+                                  [pose.pose.pose.position.x + 4, pose.pose.pose.position.y, 0 + math.pi / 2],
+                                  [pose.pose.pose.position.x + 4, pose.pose.pose.position.y + 3, 0 + math.pi],
+                                  [pose.pose.pose.position.x, pose.pose.pose.position.y + 3, 0 - math.pi / 2]
                                   ],
 
-                          'tri_60': [[pose.x, pose.y, pose.theta],
-                                     [pose.x + size, pose.y, math.pi * 2 / 3],
-                                     [pose.x + size / 2, pose.y + (size / 2 * math.tan(math.pi / 3)),
-                                      pose.theta - math.pi * 2 / 3]
+                          'tri_60': [[pose.pose.pose.position.x, pose.pose.pose.position.y, 0],
+                                     [pose.pose.pose.position.x + size, pose.pose.pose.position.y, math.pi * 2 / 3],
+                                     [pose.pose.pose.position.x + size / 2,
+                                      pose.pose.pose.position.y + (size / 2 * math.tan(math.pi / 3)),
+                                      0 - math.pi * 2 / 3]
                                      ],
 
-                          'tri_90': [[pose.x, pose.y, 0],
-                                     [pose.x + size, pose.y, math.pi / 2],
-                                     [pose.x + size, pose.y + size, -3 * math.pi / 4],
+                          'tri_90': [[pose.pose.pose.position.x, pose.pose.pose.position.y, 0],
+                                     [pose.pose.pose.position.x + size, pose.pose.pose.position.y, math.pi / 2],
+                                     [pose.pose.pose.position.x + size, pose.pose.pose.position.y + size,
+                                      -3 * math.pi / 4],
                                      ],
                           }
             self.key += 1
 
     def get_present_point(self, pose):
         """获取当前坐标和角度"""
-        self.x = pose.x
-        self.y = pose.y
-        self.theta = pose.theta
+        self.x = pose.pose.pose.position.x
+        self.y = pose.pose.pose.position.y
+        self.quaternion = [pose.pose.pose.orientation.x, pose.pose.pose.orientation.y, pose.pose.pose.orientation.z,
+                           pose.pose.pose.orientation.w]
+        self.euler = ts.euler_from_quaternion(self.quaternion)
+        self.theta = self.euler[2]
 
-    def go_graph(self, graph, kp1=4, kp2=4, kd=15, aim=0.025):
+    def go_graph(self, graph, kp1=4.0, kp2=4.0, kd=15.0, aim=0.025):
         """控制运动"""
         self.go_line(graph, kp1, kd, aim)
         self.rotate(graph, kp2)
@@ -90,7 +98,7 @@ class Turtle:
         closest_point = distance.index(min(distance))  # 获取列表中最小的点的索引
         return closest_point
 
-    def go_line(self, graph, kp=2, kd=15, aim=0.08, ):
+    def go_line(self, graph, kp=2.0, kd=15.0, aim=0.08, ):
         """控制走直线"""
         if self.lock == 0:  # 和旋转互锁
             if self.flag == 0:  # 第一次进函数执行一次初始化
@@ -103,15 +111,15 @@ class Turtle:
                 (self.x - self.point[graph][self.goal][0]) ** 2 + (
                         self.y - self.point[graph][self.goal][1]) ** 2)  # 计算现在的误差
             if abs(self.error) > aim:  # 误差大于设定精度时前进
-                self.vel_cmd.linear.x = kp * self.error + kd * (self.error - last_error)  # pd控制计算当前速度
+                self.vel_cmd.linear.x = kp * (self.error + 0.1) + kd * (self.error - last_error)  # pd控制计算当前速度
                 rospy.loginfo('mode:going')
                 rospy.loginfo('goal:{},error:{},speed:{}'.format(self.goal, self.error, self.vel_cmd.linear.x))
             else:
                 self.vel_cmd.linear.x = 0
                 self.lock = 1  # 解锁旋转
-            self.pub.publish(self.vel_cmd)  # 发布乌龟速度
+            self.pub.publish(self.vel_cmd)  # 发布机器人速度
 
-    def rotate(self, graph, kp=2):
+    def rotate(self, graph, kp=2.0):
         """控制旋转"""
         if self.lock == 1:  # 和直走互锁
             if self.flag == 1:  # 第一次进函数执行一次初始化函数
@@ -127,7 +135,7 @@ class Turtle:
                 self.vel_cmd.angular.z = 0
                 self.flag = 0
                 self.lock = 0
-            self.pub.publish(self.vel_cmd)  # 发布乌龟速度
+            self.pub.publish(self.vel_cmd)  # 发布机器人速度
 
 
 if __name__ == '__main__':
@@ -135,9 +143,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] in graph_list:  # 实现rosrun xx yy.py squ直接跑对应图形
         command = sys.argv[1]
     else:
-        command = input('Please input graph name(squ tri_60 tri_90 rec): ')  # 没在命令输对图形名称时提示输入
+        command = raw_input('Please input graph name(squ tri_60 tri_90 rec): ')  # 没在命令输对图形名称时提示输入
     try:
-        Turtle('turtle_graph', str(command))  # 实例化Turtle，传入初始化的节点名s
+        Turtle('turtle_graph', command)  # 实例化Turtle，传入初始化的节点名s
         rospy.spin()  # 循环监听callback
     except rospy.ROSInterruptException:
         rospy.loginfo("Keyboard interrupt.")
