@@ -18,6 +18,7 @@ class Soundplayer:
 
 if __name__ == '__main__':
     try:
+        rospy.init_node('soundplayer')
         Soundplayer()
     except rospy.ROSInterruptException:
         pass
