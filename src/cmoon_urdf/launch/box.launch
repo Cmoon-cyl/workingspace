@@ -1,0 +1,6 @@
+<launch>
+    <!--在参数服务器载入urdf文件-->
+    <param name="robot_description" textfile="$(find cmoon_urdf)/urdf/urdf/box.urdf"/>
+    <!--启动rviz-->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find cmoon_urdf)/config/box.rviz"/>
+</launch>

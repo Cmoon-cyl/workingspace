@@ -67,7 +67,7 @@ class Turtle:
                           'tri_90': [[pose.x, pose.y, 0],
                                      [pose.x + size, pose.y, math.pi / 2],
                                      [pose.x + size, pose.y + size, -3 * math.pi / 4],
-                                     ],
+                                     ]
                           }
             self.key += 1
 

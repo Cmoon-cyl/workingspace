@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# coding: UTF-8 
+#!/usr/bin/env python3
+# !coding=utf-8
 
 import rospy
 from std_msgs.msg import String
@@ -8,15 +8,14 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from sound_play.libsoundplay import SoundClient
 
-LOCATION = [[[3.03755426407, 8.67973995209, 0.0], [0.0, 0.0, -0.999973565473, 0.00727106283505]],
-            [[-13.5349721909, 4.6444811821, 0.0], [-13.5349721909, 4.6444811821, 0.0]],
-            [[0, 0, 0], [0.0, 0.0, 0.0, 1.0]]
-            ]
-
-
-class Main:
-    def __init__(self, name):
-        rospy.init_node(name, anonymous=True)
+LOCATION = {
+    'door': [[-4.352973, -6.186659, 0.000000], [0.000000, 0.000000, -0.202218, -0.979341]],
+    'living room': [[-0.476640, -4.946882, 0.000000], [0.000000, 0.000000, 0.808888, 0.587962]],
+    'kitchen': [[-1.658400, -0.046712, 0.000000], [0.000000, 0.000000, -0.986665, 0.162761]],
+    'bedroom': [[3.859466, -2.201285, 0.000000], [0.000000, 0.000000, -0.247601, -0.968862]],
+    'dining room': [[3.583689, 0.334696, 0.000000], [0.000000, 0.000000, -0.820933, -0.571025]],
+    'garage': [[0.166213, 3.886673, 0.000000], [0.000000, 0.000000, -0.982742, 0.184983]],
+}
 
 
 class NAVIGATION:
@@ -24,9 +23,19 @@ class NAVIGATION:
     def __init__(self):
 
         self.location = LOCATION
+
+        rospy.Subscriber('/navigation', String, self.posePosition)
+        self.pub_unlock_yes = rospy.Publisher('/lock_yes_to_base', String, queue_size=1)
+        self.soundhandle = SoundClient()
+
+        rospy.sleep(1)
+        # Make sure any lingering sound_play process are stopped .
+        self.soundhandle.stopAll()
+
         self.clear_costmap_client = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
-        point = self.goal_pose("map", self.location[0][0], self.location[0][1])
-        self.go_to_location(point)
+
+        rospy.sleep(1)
+        rospy.loginfo('go_destination ready...')
 
     def go_to_location(self, location):
         client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # 等待MoveBaseAction server启动
@@ -42,6 +51,14 @@ class NAVIGATION:
                     flag = True
                     break
             break
+
+    def posePosition(self, place):
+        point = self.goal_pose("map", self.location[place.data][0], self.location[place.data][1])
+        self.go_to_location(point)
+        print('I have got the  ' + place.data)
+        self.soundhandle.say('I have got the  ' + place.data)
+        rospy.sleep(2)
+        self.pub_unlock_yes.publish('')
 
     def goal_pose(self, name, position, orientation):
         goal_pose = MoveBaseGoal()
@@ -60,3 +77,4 @@ class NAVIGATION:
 if __name__ == '__main__':
     rospy.init_node('Navigation')
     NAVIGATION()
+    rospy.spin()

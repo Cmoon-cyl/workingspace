@@ -27,7 +27,7 @@
     <param name="use_sim_time" value="false"/>
 
     <!-- Set the name of the map yaml file: can be overridden on the command line. -->
-    <arg name="map" default="white_map.yaml"/>
+    <arg name="map" default="robocuptianjin_final.yaml"/>
 
     <!-- Run the map server with the desired map -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find rbx1_nav)/maps/$(arg map)"/>
@@ -43,7 +43,7 @@
     </node>
 
     <!-- rviz -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find remake)/rviz/rviz_graph.rviz"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find remake)/rviz/rviz_robocup.rviz"/>
 
 
 </launch>
