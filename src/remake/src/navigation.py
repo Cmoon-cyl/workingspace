@@ -19,12 +19,11 @@ LOCATION = {
 
 
 class NAVIGATION:
-
-    def __init__(self):
-
+    def __init__(self, name):
+        rospy.init_node(name)
         self.location = LOCATION
-
-        rospy.Subscriber('/navigation', String, self.posePosition)
+        self.goal = MoveBaseGoal()
+        rospy.Subscriber('/navigation', String, self.control_navigation)
         self.pub_unlock_yes = rospy.Publisher('/lock_yes_to_base', String, queue_size=1)
         self.soundhandle = SoundClient()
 
@@ -35,46 +34,44 @@ class NAVIGATION:
         self.clear_costmap_client = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
 
         rospy.sleep(1)
-        rospy.loginfo('go_destination ready...')
+        rospy.loginfo('Navigation ready...')
 
-    def go_to_location(self, location):
-        client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # 等待MoveBaseAction server启动
-        client.wait_for_server()
-        while not rospy.is_shutdown():
-            flag = False
-            while (flag == False):  # 导航到指定点
-                print('尝试导航')
-                self.clear_costmap_client()
-                client.send_goal(location)
-                client.wait_for_result()
-                if (client.get_state() == 3):
-                    flag = True
-                    break
-            break
-
-    def posePosition(self, place):
-        point = self.goal_pose("map", self.location[place.data][0], self.location[place.data][1])
+    def control_navigation(self, place):
+        point = self.set_goal("map", self.location[place.data][0], self.location[place.data][1])
         self.go_to_location(point)
         print('I have got the  ' + place.data)
         self.soundhandle.say('I have got the  ' + place.data)
         rospy.sleep(2)
         self.pub_unlock_yes.publish('')
 
-    def goal_pose(self, name, position, orientation):
-        goal_pose = MoveBaseGoal()
-        goal_pose.target_pose.header.frame_id = name
-        goal_pose.target_pose.pose.position.x = position[0]
-        goal_pose.target_pose.pose.position.y = position[1]
-        goal_pose.target_pose.pose.position.z = position[2]
+    def set_goal(self, name, position, orientation):
+        self.goal.target_pose.header.frame_id = name
+        self.goal.target_pose.pose.position.x = position[0]
+        self.goal.target_pose.pose.position.y = position[1]
+        self.goal.target_pose.pose.position.z = position[2]
 
-        goal_pose.target_pose.pose.orientation.x = orientation[0]
-        goal_pose.target_pose.pose.orientation.y = orientation[1]
-        goal_pose.target_pose.pose.orientation.z = orientation[2]
-        goal_pose.target_pose.pose.orientation.w = orientation[3]
-        return goal_pose
+        self.goal.target_pose.pose.orientation.x = orientation[0]
+        self.goal.target_pose.pose.orientation.y = orientation[1]
+        self.goal.target_pose.pose.orientation.z = orientation[2]
+        self.goal.target_pose.pose.orientation.w = orientation[3]
+        return self.goal
+
+    def go_to_location(self, location):
+        client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # 等待MoveBaseAction server启动
+        client.wait_for_server()
+        while not rospy.is_shutdown():
+            flag = False
+            while not flag:  # 导航到指定点
+                print('尝试导航...')
+                self.clear_costmap_client()
+                client.send_goal(location)
+                client.wait_for_result()
+                if client.get_state() == 3:
+                    flag = True
+                    break
+            break
 
 
 if __name__ == '__main__':
-    rospy.init_node('Navigation')
-    NAVIGATION()
+    NAVIGATION('Navigation')
     rospy.spin()
