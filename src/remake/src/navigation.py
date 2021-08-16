@@ -6,7 +6,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Empty
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from sound_play.libsoundplay import SoundClient
+from soundplayer import Soundplayer
 
 LOCATION = {
     'door': [[-4.352973, -6.186659, 0.000000], [0.000000, 0.000000, -0.202218, -0.979341]],
@@ -25,11 +25,10 @@ class NAVIGATION:
         self.goal = MoveBaseGoal()
         rospy.Subscriber('/navigation', String, self.control_navigation)
         self.pub_unlock_yes = rospy.Publisher('/lock_yes_to_base', String, queue_size=1)
-        self.soundhandle = SoundClient()
+        self.soundplayer = Soundplayer()
 
         rospy.sleep(1)
         # Make sure any lingering sound_play process are stopped .
-        self.soundhandle.stopAll()
 
         self.clear_costmap_client = rospy.ServiceProxy('move_base/clear_costmaps', Empty)
 
@@ -40,7 +39,7 @@ class NAVIGATION:
         point = self.set_goal("map", self.location[place.data][0], self.location[place.data][1])
         self.go_to_location(point)
         print('I have got the  ' + place.data)
-        self.soundhandle.say('I have got the  ' + place.data)
+        self.soundplayer.play('I have got the  ' + place.data)
         rospy.sleep(2)
         self.pub_unlock_yes.publish('')
 
