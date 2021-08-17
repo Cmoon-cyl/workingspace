@@ -24,7 +24,6 @@ class Pdfmaker:
         self.make_pdf()
 
     def make_pdf(self):
-        print(self.pdfpath + '/test.html')
         pdfkit.from_file(self.pdfpath + '/test.html', self.pdfpath + '/test.pdf')
 
 

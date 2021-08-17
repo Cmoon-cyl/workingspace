@@ -26,6 +26,9 @@ class Controller:
         self.soundplayer = Soundplayer()
         self.recognizer = Recognizer()
         self.pdfmaker = Pdfmaker()
+        self.soundplayer.play("I'm ready, please give me the commend.")
+        rospy.sleep(3)
+        self.recognizer.get_cmd()
 
     def go_point(self, place):
         self.navigator.goto(place.data)
