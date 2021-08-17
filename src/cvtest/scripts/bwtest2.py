@@ -1,15 +1,18 @@
-#!/usr/bin/env python3
-#coding: utf-8
+# !/usr/bin/env python3
+# coding: utf-8
 import rospy
 from geometry_msgs.msg import Twist
 import cv2
 import numpy as np
+
+
 class robot:
     def __init__(self):
         self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
+
     def turn(self, flag):
         msg = Twist()
-        if(flag ==1):
+        if (flag == 1):
             msg.angular.z=0.5
         elif(flag == 0):
             msg.angular.z = 0

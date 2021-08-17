@@ -54,8 +54,10 @@ ODOM_TWIST_COVARIANCE2 = [1e-9, 0, 0, 0, 0, 0,
                           0, 0, 0, 0, 1e6, 0,
                           0, 0, 0, 0, 0, 1e-9]
 
+
 SERVO_MAX = 180
 SERVO_MIN = 0
+
 
 
 class Stm32:
@@ -215,10 +217,10 @@ class Stm32:
         value = ''
         attempts = 0
         c = self.port.read(1)
-        # print str(binascii.b2a_hex(c))
+        #print str(binascii.b2a_hex(c))
         while self.receiveFiniteStates(c) != 1:
             c = self.port.read(1)
-            # print str(binascii.b2a_hex(c))
+            #print str(binascii.b2a_hex(c))
             attempts += 1
             if attempts * self.interCharTimeout > timeout:
                 return 0
@@ -446,6 +448,7 @@ class Stm32:
         else:
             return self.FAIL, -1, -1, -1, -1, -1, -1
 
+
     def start_automatic_recharge(self):
         ''' start for automatic recharge.
         '''
@@ -510,8 +513,6 @@ class Stm32:
 
 
 """ Class to receive Twist commands and publish Odometry data """
-
-
 class BaseController:
     def __init__(self, Stm32, base_frame):
         self.Stm32 = Stm32
@@ -571,7 +572,7 @@ class BaseController:
         self.last_cmd_vel = now
 
         # Subscriptions
-        # rospy.Subscriber("cmd_vel", Twist, self.cmdVelCallback)
+        #rospy.Subscriber("cmd_vel", Twist, self.cmdVelCallback)
         rospy.Subscriber("smoother_cmd_vel", Twist, self.cmdVelCallback)
         self.robot_cmd_vel_pub = rospy.Publisher('robot_cmd_vel', Twist, queue_size=5)
 
@@ -614,6 +615,7 @@ class BaseController:
         self.sonar1_offset_yaw = rospy.get_param("~sonar1_offset_yaw", 0.0)
         self.sonar1_offset_x = rospy.get_param("~sonar1_offset_x", 0.27)
         self.sonar1_offset_y = rospy.get_param("~sonar1_offset_y", -0.19)
+
 
         self.sonar2_offset_yaw = rospy.get_param("~sonar2_offset_yaw", 1.57)
         self.sonar2_offset_x = rospy.get_param("~sonar2_offset_x", 0.24)
@@ -952,7 +954,7 @@ class BaseController:
                     str(vol1) + "," + str(vol2) + "," + str(vol3) + "," + str(vol4) + "," + str(vol5) + "," + str(vol6))
                 self.voltage_percentage_pub.publish(self.volTransPerentage(self.voltage_val))
                 self.xunfei_voltage_per_pub.publish(self.volTransPerentage(self.voltage_val))
-                # rospy.loginfo("voltage_Perentage:" + str(self.volTransPerentage(self.voltage_val)))
+                #rospy.loginfo("voltage_Perentage:" + str(self.volTransPerentage(self.voltage_val)))
             except:
                 self.lwheel_ele_pub.publish(-1)
                 self.rwheel_ele_pub.publish(-1)
