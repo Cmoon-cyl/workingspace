@@ -5,6 +5,7 @@ import rospy
 from navigator import Navigator
 from soundplayer import Soundplayer
 from voice_recognizer import Recognizer
+from pdfmaker import Pdfmaker
 from std_msgs.msg import String
 
 LOCATION = {
@@ -24,6 +25,7 @@ class Controller:
         self.navigator = Navigator()
         self.soundplayer = Soundplayer()
         self.recognizer = Recognizer()
+        self.pdfmaker = Pdfmaker()
 
     def go_point(self, place):
         self.navigator.goto(place.data)

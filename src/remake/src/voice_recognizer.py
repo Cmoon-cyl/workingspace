@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import String
 from soundplayer import Soundplayer
+from pdfmaker import Pdfmaker
 
 LOCATION = {
     'door': ['door', 'dog'],
@@ -25,6 +26,7 @@ class Recognizer:
         self.location = LOCATION
         self.goal = ''
         self._soundplayer = Soundplayer()
+        self._pdfmaker = Pdfmaker()
         self.status = 0
         self.key = 1
 
@@ -53,6 +55,8 @@ class Recognizer:
             elif ('Yes.' in self.cmd) or ('yes' in self.cmd) and (self.status == 1):
 
                 self._soundplayer.play('Ok, I will.')
+                self._pdfmaker.write('Cmd: Do you need me go to the ' + self.goal + ' and clean the rubbish there?')
+                self._pdfmaker.write('Respond: Ok,I will.')
                 print('Ok, I will.')
                 self.start_signal.publish(self.goal)
                 self.key = 0
