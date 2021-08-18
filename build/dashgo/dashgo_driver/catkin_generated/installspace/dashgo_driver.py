@@ -156,7 +156,7 @@ class Stm32:
 
     def receiveFiniteStates(self, rx_data):
         if self.receive_state_ == self.WAITING_FF:
-            # print str(binascii.b2a_hex(rx_data))
+            #print str(binascii.b2a_hex(rx_data))
             if rx_data == '\xff':
                 self.receive_state_ = self.WAITING_AA
                 self.receive_check_sum_ = 0
@@ -614,7 +614,7 @@ class BaseController:
 
         self.sonar1_offset_yaw = rospy.get_param("~sonar1_offset_yaw", 0.0)
         self.sonar1_offset_x = rospy.get_param("~sonar1_offset_x", 0.27)
-        self.sonar1_offset_y = rospy.get_param("~sonar1_offset_y", -0.19)
+        self.sonar1_offset_y = rospy.get_param("~sonar1_offset_y",-0.19)
 
 
         self.sonar2_offset_yaw = rospy.get_param("~sonar2_offset_yaw", 1.57)
@@ -680,7 +680,7 @@ class BaseController:
         self.voltage_str = ""
         self.voltage_str_pub = rospy.Publisher('voltage_str', String, queue_size=5)
         self.xunfei_voltage_per_pub = rospy.Publisher('battery_state', Int32, queue_size=5)
-
+   
         self.emergencybt_val = 0
         self.emergencybt_pub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
         self.recharge_ir_pub = rospy.Publisher('recharge_ir_status', Int16, queue_size=5)
@@ -1201,7 +1201,7 @@ class BaseController:
             dt = now - self.then
             self.then = now
             dt = dt.to_sec()
-
+            
             # Calculate odometry
             if self.enc_left == None:
                 dright = 0
@@ -1222,9 +1222,9 @@ class BaseController:
                 # dright = (right_enc - self.enc_right) / self.ticks_per_meter
                 # dleft = (left_enc - self.enc_left) / self.ticks_per_meter
                 dleft = 1.0 * (left_enc + self.l_wheel_mult * (
-                        self.encoder_max - self.encoder_min) - self.enc_left) / self.ticks_per_meter
+                            self.encoder_max - self.encoder_min) - self.enc_left) / self.ticks_per_meter
                 dright = 1.0 * (right_enc + self.r_wheel_mult * (
-                        self.encoder_max - self.encoder_min) - self.enc_right) / self.ticks_per_meter
+                            self.encoder_max - self.encoder_min) - self.enc_right) / self.ticks_per_meter
 
             self.enc_right = right_enc
             self.enc_left = left_enc
@@ -1258,7 +1258,7 @@ class BaseController:
                     self.base_frame,
                     "odom"
                 )
-
+    
             odom = Odometry()
             odom.header.frame_id = "odom"
             odom.child_frame_id = self.base_frame
@@ -1282,11 +1282,11 @@ class BaseController:
             #    odom.twist.covariance = ODOM_TWIST_COVARIANCE
 
             self.odomPub.publish(odom)
-
+            
             if now > (self.last_cmd_vel + rospy.Duration(self.timeout)):
                 self.v_des_left = 0
                 self.v_des_right = 0
-
+                
             if self.v_left < self.v_des_left:
                 self.v_left += self.max_accel
                 if self.v_left > self.v_des_left:
@@ -1313,19 +1313,19 @@ class BaseController:
                 self.Stm32.drive(self.v_left, self.v_right)
 
             self.t_next = now + self.t_delta
-
+            
     def stop(self):
         self.stopped = True
         self.Stm32.drive(0, 0)
 
     def isPassedCallback(self, msg):
-        if (msg.data > 2):
+        if (msg.data>2):
             self.isPassed = False
         else:
             self.isPassed = True
 
     def isPassedCallback_2(self, msg):
-        if (msg.data > 2):
+        if (msg.data >2):
             self.isPassed_2 = False
         else:
             self.isPassed_2 = True
@@ -1403,8 +1403,8 @@ class BaseController:
                 rospy.logwarn("sonar1 smaller than safe_range_0, only trun left")
 
             if ((self.sonar_r3 <= self.safe_range_0 and self.sonar_r3 >= 2) and (th > 0)):
-                x = -0.05
-                th = -0.2
+                x=-0.05
+                th=-0.2
 
         if x == 0:
             # Turn in place
@@ -1418,7 +1418,7 @@ class BaseController:
             right = th * self.wheel_track * self.gear_reduction / 2.0
             left = -right
         elif th == 0:
-            # print "222bianhua w=0  v="+str(x)
+            #print "222bianhua w=0  v="+str(x)
             # Pure forward/backward motion
             left = right = x
         else:
@@ -1438,16 +1438,16 @@ class BaseController:
             right = x + th * self.wheel_track * self.gear_reduction / 2.0
 
         self.v_des_left = int(left * self.ticks_per_meter / self.Stm32.PID_RATE + numpy.sign(left) * 0.5)
-        self.v_des_right = int(right * self.ticks_per_meter / self.Stm32.PID_RATE + numpy.sign(right) * 0.5)
+        self.v_des_right = int(right * self.ticks_per_meter / self.Stm32.PID_RATE+ numpy.sign(right)*0.5)
 
 
 class Stm32ROS():
     def __init__(self):
         rospy.init_node('Stm32', log_level=rospy.DEBUG)
-
+                
         # Cleanup when termniating the node
         rospy.on_shutdown(self.shutdown)
-
+        
         self.port = rospy.get_param("~port", "/dev/ttyUSB0")
         self.baud = int(rospy.get_param("~baud", 115200))
         self.timeout = rospy.get_param("~timeout", 0.5)
@@ -1460,44 +1460,45 @@ class Stm32ROS():
         # Rate at which summary SensorState message is published. Individual sensors publish
         # at their own rates.        
         self.sensorstate_rate = int(rospy.get_param("~sensorstate_rate", 10))
-
+        
         self.use_base_controller = rospy.get_param("~use_base_controller", True)
-
+        
+        
         # Set up the time for publishing the next SensorState message
         now = rospy.Time.now()
         self.t_delta_sensors = rospy.Duration(1.0 / self.sensorstate_rate)
         self.t_next_sensors = now + self.t_delta_sensors
-
+        
         # Initialize a Twist message
         self.cmd_vel = Twist()
-
+  
         # A cmd_vel publisher so we can stop the robot when shutting down
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
-
+        
         # Initialize the controlller
         self.controller = Stm32(self.port, self.baud, self.timeout)
-
+        
         # Make the connection
         self.controller.connect()
-
+        
         rospy.loginfo("Connected to Stm32 on port " + self.port + " at " + str(self.baud) + " baud")
-
+     
         # Reserve a thread lock
         mutex = thread.allocate_lock()
-
+              
         # Initialize the base controller if used
         if self.use_base_controller:
             self.myBaseController = BaseController(self.controller, self.base_frame)
-
+    
         # Start polling the sensors and base controller
         while not rospy.is_shutdown():
-
+                    
             if self.use_base_controller:
                 mutex.acquire()
                 self.myBaseController.poll()
                 mutex.release()
             r.sleep()
-
+    
     def shutdown(self):
         # Stop the robot
         try:
@@ -1507,7 +1508,6 @@ class Stm32ROS():
         except:
             pass
         rospy.loginfo("Shutting down Stm32 Node...")
-
-
+        
 if __name__ == '__main__':
     myStm32 = Stm32ROS()

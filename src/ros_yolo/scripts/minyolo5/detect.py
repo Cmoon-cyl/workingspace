@@ -138,6 +138,7 @@ def detect(save_img=False):
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
                     vid_writer.write(im0)
 
+
     if save_txt or save_img:
         print('Results saved to %s' % Path(out))
 

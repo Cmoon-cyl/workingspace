@@ -40,8 +40,6 @@ def publish_image(imgdata):
     image_temp.header = header
     image_temp.step = 1241 * 3
     image_pub.publish(image_temp)
-
-
 if __name__ == '__main__':
 
     rospy.init_node('pub_cv2_camera')

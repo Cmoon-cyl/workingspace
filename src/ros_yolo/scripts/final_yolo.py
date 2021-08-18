@@ -2,6 +2,7 @@
 
 
 import roslib
+# from cv_bridge import CvBridge
 import rospy
 from std_msgs.msg import Header
 from std_msgs.msg import String
@@ -73,8 +74,6 @@ def loadimg(img):  # 接受opencv图片
     img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
     img = np.ascontiguousarray(img)
     return path, img, img0, cap
-
-
 # src=cv2.imread('biye.jpg')
 def detect(img):
     time1 = time.time()
@@ -90,7 +89,7 @@ def detect(img):
     augment = 'store_true'
     conf_thres = 0.3
     iou_thres = 0.45
-    classes = (0, 1, 2, 3, 5, 7)
+    classes = None  # (0,1,2)
     agnostic_nms = 'store_true'
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
     _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
@@ -148,13 +147,11 @@ def detect(img):
     #### Create CompressedIamge ####
     publish_image(im0)
 
-
 def image_callback_1(image):
     global ros_image
     ros_image = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
     with torch.no_grad():
         detect(ros_image)
-
 
 def publish_image(imgdata):
     image_temp = Image()
@@ -176,7 +173,7 @@ if __name__ == '__main__':
     device = ''
     device = select_device(device)
     half = device.type != 'cpu'  # half precision only supported on CUDA
-    weights = 'yolov5l.pt'
+    weights = '/home/cmoon/workingspace/src/ros_yolo/scripts/minyolo5/weights/yolov5s_old.pt'
     imgsz = 640
     model = attempt_load(weights, map_location=device)  # load FP32 model
     imgsz = check_img_size(imgsz, s=model.stride.max())  # check img_size
@@ -186,9 +183,12 @@ if __name__ == '__main__':
     模型初始化
     '''
     rospy.init_node('ros_yolo')
-    image_topic_1 = "/k4a/rgb/image_raw"
+    # image_topic_1 = "/k4a/rgb/image_raw"
+    # image_topic_1 = "/usb_cam/image_raw"
+    image_topic_1 = "/rgb_image"
     rospy.Subscriber(image_topic_1, Image, image_callback_1, queue_size=1, buff_size=52428800)
     image_pub = rospy.Publisher('/yolo_result_out', Image, queue_size=1)
     # rospy.init_node("yolo_result_out_node", anonymous=True)
+    # cv_bridge=CvBridge()
 
     rospy.spin()

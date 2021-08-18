@@ -187,6 +187,7 @@ class LoadImages:  # for inference
         return self.nf  # number of files
 
 
+
 def my_LoadImages(source):
     path = '/home/qm/ros_learn/py3_yolo/src/ros_yolo/scripts/path'
     img_size = 640
@@ -198,7 +199,6 @@ def my_LoadImages(source):
     img = np.ascontiguousarray(img)
     print('img', img.shape)
     return path, img, img0, cap
-
 
 class LoadWebcam:  # for inference
     def __init__(self, pipe=0, img_size=640):

@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 import sys
-
 sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages')
 
 import argparse
@@ -142,6 +141,7 @@ def detect(save_img=False):
                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
                     vid_writer.write(im0)
+
 
     if save_txt or save_img:
         print('Results saved to %s' % Path(out))

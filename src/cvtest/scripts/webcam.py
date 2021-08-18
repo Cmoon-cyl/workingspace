@@ -4,7 +4,7 @@ import rospy
 import numpy as np
 import cv2
 
-cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(2, cv2.CAP_DSHOW)
 cap.open(0)
 while cap.isOpened():
     flag, frame = cap.read()
