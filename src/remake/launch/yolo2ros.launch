@@ -1,0 +1,6 @@
+<launch>
+    <!-- information -->
+    <node pkg="remake" type="kinect.py" name="ros2yolo" output="screen" respawn="true"/>
+    <node pkg="ros_yolo" type="final_yolo.py" name="yolo2ros" output="screen"/>
+
+</launch>
