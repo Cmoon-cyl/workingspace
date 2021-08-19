@@ -1,3 +1,4 @@
+<!--Created by Cmoon-->
 <launch>
     <!-- information -->
     <include file="$(find azure_kinect_ros_driver)/launch/rectify_test.launch"/>
