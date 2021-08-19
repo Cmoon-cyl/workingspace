@@ -162,7 +162,7 @@ def publish_info(name):
     image_temp.height = IMAGE_HEIGHT
     image_temp.width = IMAGE_WIDTH
     image_temp.encoding = 'rgb8'
-    image_temp.data = np.array(imgdata).tostring()
+    # image_temp.data = np.array(imgdata).tostring()
     # print(imgdata)
     # image_temp.is_bigendian=True
     image_temp.header = header
