@@ -42,21 +42,19 @@ class Recognizer:
 
             response = self.analyze()
 
-            if response == 'Do you need me ':
+            if response == 'Do you need me':
                 self._soundplayer.say("Please say the command again. ")
-                rospy.sleep(2)
                 self.get_cmd()
             else:
                 self.status = 1
                 print(response)
-                self._soundplayer.say(response)
-                rospy.sleep(5)
-                self._soundplayer.say("please say yes or no.")
+                self._soundplayer.say(response, 3)
+                self._soundplayer.say("please say yes or no.", 1)
                 print('Please say yes or no.')
-                rospy.sleep(2)
                 self.get_cmd()
 
-        elif ('Yes.' in self.cmd) or ('yes' in self.cmd) and (self.status == 1):
+        elif ('Yes.' in self.cmd) or ('yes' in self.cmd) or ('Yeah' in self.cmd) or ('yeah' in self.cmd) and (
+                self.status == 1):
 
             self._soundplayer.say('Ok, I will.')
             self._pdfmaker.write('Cmd: Do you need me go to the ' + self.goal + ' and clean the rubbish there?')
@@ -72,9 +70,13 @@ class Recognizer:
                 self.status == 1):
             self._soundplayer.say("Please say the command again. ")
             print("Please say the command again. ")
-            rospy.sleep(2)
             self.status = 0
             self.goal = ''
+            self.get_cmd()
+
+        else:
+            self._soundplayer.say("please say yes or no.")
+            print('Please say yes or no.')
             self.get_cmd()
 
     def processed_cmd(self, cmd):
@@ -84,7 +86,8 @@ class Recognizer:
         return cmd
 
     def get_cmd(self):
-        self._soundplayer.say('Speak.')
+        """获取一次命令"""
+        self._soundplayer.play('Speak.')
         self.wakeup.publish('ok')
 
     def analyze(self):

@@ -52,8 +52,9 @@ add_message_files(FILES
 
 ## Generate services in the 'srv' folder
 add_service_files(FILES
-  words.srv
+  yolo.srv
   cmoon.srv
+
 )
 
 ## Generate actions in the 'action' folder

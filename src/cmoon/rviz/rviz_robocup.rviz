@@ -1,12 +1,12 @@
 Panels:
   - Class: rviz/Displays
-    Help Height: 78
+    Help Height: 70
     Name: Displays
     Property Tree Widget:
       Expanded:
         - /Global Options1
       Splitter Ratio: 0.5
-    Tree Height: 299
+    Tree Height: 307
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -359,7 +359,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /k4a/rgb/image_raw
+      Image Topic: /rgb_image
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -404,15 +404,15 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.136723756790161
-        Y: -1.1240873336791992
-        Z: -4.946639537811279
+        X: 3.000394105911255
+        Y: -0.044046491384506226
+        Z: -3.9916250705718994
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9547969102859497
+      Pitch: 0.9497969150543213
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
       Yaw: 3.7735934257507324
@@ -435,5 +435,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1200
-  X: 898
-  Y: 124
+  X: 694
+  Y: 54
