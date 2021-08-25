@@ -11,6 +11,7 @@ class Base:
         self.twist = Twist()
 
     def rotate(self, speed):
+        print('rotating')
         self.twist.linear.x = 0
         self.twist.linear.y = 0
         self.twist.linear.z = 0
@@ -20,6 +21,7 @@ class Base:
         self.pub.publish(self.twist)
 
     def stop(self):
+        print('stop')
         self.twist.linear.x = 0
         self.twist.linear.y = 0
         self.twist.linear.z = 0

@@ -10,7 +10,7 @@ from cv_bridge import CvBridge
 class Main:
     def __init__(self, name):
         rospy.init_node(name, anonymous=True)
-        # rospy.Subscriber('/k4a/rgb/image_raw', Image, self.changeform, queue_size=1, buff_size=52428800)#使用kinect实时检测
+        # rospy.Subscriber('/k4a/rgb/image_raw', Image, self.changeform, queue_size=1, buff_size=52428800)  # 使用kinect实时检测
         rospy.Subscriber("/usb_cam/image_raw", Image, self.changeform, queue_size=1, buff_size=52428800)  # 使用电脑摄像头实时检测
         self.rgb = rospy.Publisher('/rgb_image', Image, queue_size=10)
         self.bgra_image = None
