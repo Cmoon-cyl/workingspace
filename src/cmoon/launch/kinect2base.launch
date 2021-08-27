@@ -1,0 +1,6 @@
+<launch>
+    <!-- 发布kinect相对于底盘的坐标关系 -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="kinect"
+          args="-0.2 0 1.25 -1.570796327 0 -2.094395102 /base_link /kinect" output="screen"/>
+    <!-- x偏移量 y偏移量 z偏移量 z偏航角度 x俯仰角度 y滚转角度 父级坐标系 子级坐标系-->
+</launch>

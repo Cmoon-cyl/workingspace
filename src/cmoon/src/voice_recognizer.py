@@ -75,7 +75,7 @@ class Recognizer:
             self.get_cmd()
 
         else:
-            self._soundplayer.say("please say yes or no.")
+            self._soundplayer.say("Please say yes or no.")
             print('Please say yes or no.')
             self.get_cmd()
 

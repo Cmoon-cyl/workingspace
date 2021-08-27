@@ -7,7 +7,6 @@ from nav_msgs.msg import Odometry
 from tf import transformations as tf
 import math
 
-
 class Base:
     def __init__(self):
         self.pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
@@ -100,7 +99,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('base', anonymous=True)
         base = Base()
-        for i in range(20):
+        for i in range(10):
             degree = input('Input degree:')
             base.turn(float(degree))
             print(i)
