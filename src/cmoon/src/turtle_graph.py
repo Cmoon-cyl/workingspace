@@ -33,7 +33,6 @@ class Turtle:
         self.key = 0
         self.theta_list = []
         self.speed = 4  # 控制旋转时的方向,顺or逆
-        self.num = 0
 
     def control(self, pose):
         """订阅的回调函数"""
@@ -124,6 +123,7 @@ class Turtle:
         self.rotate(graph, kp2)
 
     def set_goal(self, graph):
+        """设定下一个目标点"""
         if self.lock == 1:
             print(self.goal)
             self.goal = self.goal + 1 if self.goal != len(self.point[graph]) - 1 else 0
