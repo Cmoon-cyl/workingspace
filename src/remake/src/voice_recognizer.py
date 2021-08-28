@@ -43,7 +43,6 @@ class Recognizer:
 
             if response == 'Do you need me ':
                 self._soundplayer.play("Please say the command again. ")
-                rospy.sleep(2)
                 self.get_cmd()
             else:
                 self.status = 1
@@ -52,7 +51,6 @@ class Recognizer:
                 rospy.sleep(5)
                 self._soundplayer.play("please say yes or no.")
                 print('Please say yes or no.')
-                rospy.sleep(2)
                 self.get_cmd()
 
         elif ('Yes.' in self.cmd) or ('yes' in self.cmd) and (self.status == 1):

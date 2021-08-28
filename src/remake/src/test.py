@@ -2,11 +2,16 @@
 # coding: UTF-8 
 
 import rospy
-import tf
+
 
 class Main:
     def __init__(self, name):
-        rospy.init_node(name, anonymous=True)
+
+        self.num = 2
+        if 0 < self.num < 4:
+            print(self.num)
+        else:
+            print('no')
 
 
 if __name__ == '__main__':

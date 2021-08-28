@@ -34,7 +34,7 @@ class Navigator:
         point = self.set_goal("map", self.location[place][0], self.location[place][1])
         self.go_to_location(point)
         print('I have got the  ' + place)
-        self.soundplayer.play('I have got the  ' + place)
+        self.soundplayer.say('I have got the  ' + place)
         rospy.sleep(2)
         self.pub_unlock_yes.publish('')
 
