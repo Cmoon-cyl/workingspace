@@ -19,6 +19,7 @@ from utils.general import (
     check_img_size, non_max_suppression, apply_classifier, scale_coords,
     xyxy2xywh, plot_one_box, strip_optimizer, set_logging)
 from utils.torch_utils import select_device, load_classifier, time_synchronized
+from cmoon_msgs.msg import Point
 
 ros_image = 0
 
@@ -46,9 +47,9 @@ class Detector:
         rospy.Subscriber('/rgb_image', Image, self.image_callback, queue_size=1, buff_size=52428800)
         rospy.Subscriber('/dep_image', Image, self.image_dep_callback, queue_size=1, buff_size=52428800)
         rospy.Subscriber('/ros2yolo', String, self.send_img, queue_size=1)
-        self.testpub = rospy.Publisher('/xyxy', String, queue_size=10)
+        self.pub_point = rospy.Publisher('/kinect_point', String, queue_size=10)
         self.pdfmaker = Pdfmaker()
-        self.yolo_result = rospy.Publisher('/yolo_result', String, queue_size=1)
+        self.yolo_result = rospy.Publisher('/yolo_result', Point, queue_size=1)
         self.rubbish_number = 0
         self.ros_image_depth = None
         # self.ros_image = None
@@ -64,6 +65,7 @@ class Detector:
     def send_img(self, msg):
         coorindate_cls = list()  # 存放类别,x1,y1,x2,y2
         target_coorindate = list()  # 存放目标点三维坐标 二维列表
+        point = Point()
         with torch.no_grad():
             coorindate_cls = self.detect()
         if (coorindate_cls != list()):
@@ -81,6 +83,12 @@ class Detector:
                                               camera_coorindate[2].item() / 1000
                                               ]
                                              )
+                    point.result = cls[0]
+                    point.x = camera_coorindate[0].item() / 1000
+                    point.y = camera_coorindate[0].item() / 1000
+                    point.z = camera_coorindate[0].item() / 1000
+                    self.yolo_result.publish(point)
+
         print(target_coorindate)
 
     def detect(self):
@@ -147,13 +155,12 @@ class Detector:
 
                 if s != '':
                     print(s)
-                    # self.rubbish_number += 1
-                    # self.yolo_result.publish(s)
-                    # ros_image = im0[:, :, [2, 1, 0]]
-                    # path = os.path.dirname(os.path.dirname(__file__)) + '/pdf/'
-                    # savename = path + 'rubbish' + str(self.rubbish_number) + '.jpg'
-                    # cv2.imwrite(savename, ros_image)
-                    # self.pdfmaker.write_img(savename)
+                    self.rubbish_number += 1
+                    ros_image = im0[:, :, [2, 1, 0]]
+                    path = os.path.dirname(os.path.dirname(__file__)) + '/pdf/'
+                    savename = path + 'rubbish' + str(self.rubbish_number) + '.jpg'
+                    cv2.imwrite(savename, ros_image)
+                    self.pdfmaker.write_img(savename)
         out_img = im0[:, :, [2, 1, 0]]
         cv2.imshow('YOLOV5', out_img)
         a = cv2.waitKey(1)
