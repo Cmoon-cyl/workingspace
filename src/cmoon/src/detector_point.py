@@ -47,7 +47,6 @@ class Detector:
         rospy.Subscriber('/rgb_image', Image, self.image_callback, queue_size=1, buff_size=52428800)
         rospy.Subscriber('/dep_image', Image, self.image_dep_callback, queue_size=1, buff_size=52428800)
         rospy.Subscriber('/ros2yolo', String, self.send_img, queue_size=1)
-        self.pub_point = rospy.Publisher('/kinect_point', String, queue_size=10)
         self.pdfmaker = Pdfmaker()
         self.yolo_result = rospy.Publisher('/yolo_result', Point, queue_size=1)
         self.rubbish_number = 0
@@ -87,10 +86,10 @@ class Detector:
                     point.x = camera_coorindate[0].item() / 1000
                     point.y = camera_coorindate[0].item() / 1000
                     point.z = camera_coorindate[0].item() / 1000
+                    print('publishing')
                     self.yolo_result.publish(point)
 
         print(target_coorindate)
-
     def detect(self):
         coorindate_cls = list()
         global ros_image
