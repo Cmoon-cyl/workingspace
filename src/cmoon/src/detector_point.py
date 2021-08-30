@@ -84,8 +84,8 @@ class Detector:
                                              )
                     point.result = cls[0]
                     point.x = camera_coorindate[0].item() / 1000
-                    point.y = camera_coorindate[0].item() / 1000
-                    point.z = camera_coorindate[0].item() / 1000
+                    point.y = camera_coorindate[1].item() / 1000
+                    point.z = camera_coorindate[2].item() / 1000
                     print('publishing')
                     self.yolo_result.publish(point)
 
@@ -156,10 +156,10 @@ class Detector:
                     print(s)
                     self.rubbish_number += 1
                     ros_image = im0[:, :, [2, 1, 0]]
-                    path = os.path.dirname(os.path.dirname(__file__)) + '/pdf/'
-                    savename = path + 'rubbish' + str(self.rubbish_number) + '.jpg'
-                    cv2.imwrite(savename, ros_image)
-                    self.pdfmaker.write_img(savename)
+                    # path = os.path.dirname(os.path.dirname(__file__)) + '/pdf/'
+                    # savename = path + 'rubbish' + str(self.rubbish_number) + '.jpg'
+                    # cv2.imwrite(savename, ros_image)
+                    # self.pdfmaker.write_img(savename)
         out_img = im0[:, :, [2, 1, 0]]
         cv2.imshow('YOLOV5', out_img)
         a = cv2.waitKey(1)
