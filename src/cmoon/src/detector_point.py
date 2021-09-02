@@ -44,8 +44,11 @@ class Detector:
 
         if self.half:
             self.model.half()  # to FP16
-        rospy.Subscriber('/rgb_image', Image, self.image_callback, queue_size=1, buff_size=52428800)
-        rospy.Subscriber('/dep_image', Image, self.image_dep_callback, queue_size=1, buff_size=52428800)
+        # rospy.Subscriber('/rgb_image', Image, self.image_callback, queue_size=1, buff_size=52428800)
+        rospy.Subscriber('/k4a/rgb/image_raw', Image, self.image_callback, queue_size=1, buff_size=52428800)
+        # rospy.Subscriber('/dep_image', Image, self.image_dep_callback, queue_size=1, buff_size=52428800)
+        rospy.Subscriber('/k4a/depth_to_rgb/image_raw', Image, self.image_dep_callback, queue_size=1,
+                         buff_size=52428800)
         rospy.Subscriber('/ros2yolo', String, self.send_img, queue_size=1)
         self.pdfmaker = Pdfmaker()
         self.yolo_result = rospy.Publisher('/yolo_result', Point, queue_size=1)
@@ -59,7 +62,8 @@ class Detector:
 
     def image_callback(self, image):
         # global ros_image
-        self.ros_image = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
+        img = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
+        self.ros_image = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
 
     def send_img(self, msg):
         coorindate_cls = list()  # 存放类别,x1,y1,x2,y2
@@ -90,6 +94,7 @@ class Detector:
                     self.yolo_result.publish(point)
 
         print(target_coorindate)
+
     def detect(self):
         coorindate_cls = list()
         global ros_image

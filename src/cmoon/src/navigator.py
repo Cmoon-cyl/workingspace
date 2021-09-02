@@ -25,6 +25,12 @@ class Navigator:
         print('I have got the ' + place)
         self.soundplayer.say('I have got the ' + place)
 
+    def go_near(self, name, position, orientation):
+        point = self.set_goal('map', position, orientation)
+        self.go_to_location(point)
+        print('I am near the ' + name)
+        self.soundplayer.say('I am near the ' + name)
+
     def set_goal(self, name, position, orientation):
         """设置导航目标点的坐标和四元数"""
         self.goal.target_pose.header.frame_id = name

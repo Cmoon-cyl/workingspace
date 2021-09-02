@@ -44,7 +44,7 @@
     </node>
 
     <!-- rviz -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cmoon)/rviz/rviz_robocup.rviz"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cmoon)/rviz/rviz_nav.rviz"/>
 
 
 </launch>

@@ -1,6 +1,7 @@
 <launch>
     <!-- information -->
-    <node pkg="cmoon" type="controller.py" name='controller' output="screen"/>
-    <node pkg="cmoon" type="kinect_point.py" name="ros2yolo" output="screen" respawn="true"/>
+    <node pkg="cmoon" type="controller_nav.py" name='controller' output="screen"/>
     <node pkg="cmoon" type="detector_point.py" name="yolo2ros" output="screen"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="kinect"
+          args="-0.2 0 1.25 -1.570796327 0 -1.570796327 /base_footprint /kinect" output="screen"/>
 </launch>

@@ -50,7 +50,8 @@ class Base:
 
     def turn(self, angle, kp=1.5, kd=0.5):
         """传入转的角度,单位°,正值左转,负值右转,范围0~180°"""
-        angle_radian = (angle / 180) * math.pi
+        print('turing')
+        angle_radian = (float(angle) / 180) * math.pi
         start_angle = self.get_angle()
         end_angle = start_angle + angle_radian
         if end_angle > math.pi:
@@ -59,6 +60,11 @@ class Base:
             end_angle = end_angle + 2 * math.pi
         error = angle_radian
         rate = rospy.Rate(1000)
+        print(angle_radian)
+        print(self.angle)
+        print(start_angle)
+        print(end_angle)
+        print(self.angle - end_angle)
         while abs(self.angle - end_angle) > 0.02:
             last_error = error
             error = abs(self.angle - end_angle)

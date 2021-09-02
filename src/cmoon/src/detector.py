@@ -44,7 +44,8 @@ class Detector:
 
     def image_callback(self, image):
         # global ros_image
-        self.ros_image = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
+        img = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
+        self.ros_image = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
 
     def send_img(self, msg):
         with torch.no_grad():

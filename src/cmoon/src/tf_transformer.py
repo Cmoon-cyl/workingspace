@@ -12,7 +12,7 @@ from cmoon_msgs.msg import Point, Pose
 
 class Transformer:
     def __init__(self):
-        rospy.Subscriber('/yolo_result', Point, self.kinect2map, queue_size=10)
+        # rospy.Subscriber('/yolo_result', Point, self.kinect2map, queue_size=10)
         self.show_point = rospy.Publisher('/clicked_point', PointStamped, queue_size=10)
         self.buffer = tf2_ros.Buffer()  # 创建缓存对象
         self.sub = tf2_ros.TransformListener(self.buffer)  # 创建订阅对象,将缓存对象传入
@@ -20,7 +20,7 @@ class Transformer:
         self.point_show = PointStamped()
 
     def kinect2map(self, point):
-        self.dynamic_sub('kinect', 'map', point)
+        self.transformed('kinect', 'map', point)
 
     def dynamic_pub(self, father, child, point):
         pub = tf2_ros.TransformBroadcaster()  # 创建发布坐标系相对关系的对象
@@ -39,7 +39,7 @@ class Transformer:
         ts.transform.rotation.w = point.ow
         pub.sendTransform(ts)
 
-    def dynamic_sub(self, now_tf, aim_tf, point):
+    def transformed(self, now_tf, aim_tf, point):
         ps = tf2_geometry_msgs.PointStamped()
         ps.header.stamp = rospy.Time()
         ps.header.frame_id = now_tf
@@ -50,7 +50,6 @@ class Transformer:
         while not rospy.is_shutdown():
             try:
                 result = self.buffer.transform(ps, aim_tf)
-                rospy.loginfo('{},{},{}'.format(result.point.x, result.point.y, result.point.z))
                 self.point_show.header.frame_id = 'map'
                 self.point_show.point.x = result.point.x
                 self.point_show.point.y = result.point.y
@@ -59,6 +58,7 @@ class Transformer:
                 break
             except Exception as e:
                 rospy.logwarn('TfError:%s', e)
+        return [self.point_show.point.x, self.point_show.point.y, self.point_show.point.z]
 
 
 if __name__ == '__main__':
