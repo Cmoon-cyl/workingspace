@@ -5,7 +5,7 @@
 import rospy
 from navigator import Navigator  # 导航模块
 from soundplayer import Soundplayer  # 语音合成模块
-from voice_recognizer import Recognizer  # 语音识别模块和分析模块
+from name_recognizer import Recognizer  # 语音识别模块和分析模块
 from pdfmaker import Pdfmaker  # pdf制作模块
 from base_controller import Base  # 底盘运动模块
 from std_msgs.msg import String  # String类型消息,从String.data中可获得信息
@@ -40,7 +40,7 @@ class Controller:
         self.recognizer = Recognizer()  # 实例化语音识别和逻辑判断模块
         self.pdfmaker = Pdfmaker()  # 实例化pdf导出模块
         self.base = Base()  # 实例化移动底盘模块
-        self.soundplayer.say("I'm ready, please give me the commend.")  # 语音合成模块调用play方法传入字符串即可播放
+        self.soundplayer.say("I have caught you. Please tell me your name.", 3)  # 语音合成模块调用play方法传入字符串即可播放
         self.recognizer.get_cmd()  # 获取一次语音命令
         self.result = None  # yolo检测的结果
         self.goal = None  # 要去清理垃圾的房间

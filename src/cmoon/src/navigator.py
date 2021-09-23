@@ -46,20 +46,23 @@ class Navigator:
         return self.goal
 
     def go_to_location(self, location):
-        client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # 等待MoveBaseAction server启动
-        client.wait_for_server()
+        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # 等待MoveBaseAction server启动
+        self.client.wait_for_server()
         print('Ready to go.')
         while not rospy.is_shutdown():
             flag = False
             while not flag:  # 导航到指定点
                 print('尝试导航...')
                 self.clear_costmap_client()
-                client.send_goal(location)
-                client.wait_for_result()
-                if client.get_state() == 3:
+                self.client.send_goal(location)
+                self.client.wait_for_result()
+                if self.client.get_state() == 3:
                     flag = True
                     break
             break
+
+    def stop(self):
+        self.client.cancel_all_goals()
 
 
 if __name__ == '__main__':

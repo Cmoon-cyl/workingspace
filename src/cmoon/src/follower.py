@@ -31,8 +31,11 @@ class Findbody:
         self.flag = True
         self.lock = False
         self.kp_go = 4.0
+        self.td_go = 1.0
         self.kp_turn = 1.0
         self.aim = 0.7
+        self.error_go = 1.5
+        self.key = 0
         rospy.Subscriber('/k4a/body_tracking_data', MarkerArray, self.save)
         self.speed = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
@@ -58,11 +61,13 @@ class Findbody:
                 self.oy = msg.markers[2].pose.orientation.y
                 self.oz = msg.markers[2].pose.orientation.z
                 self.ow = msg.markers[2].pose.orientation.w
-                error_go = self.pz - self.aim
+                last_error = self.pz if self.key == 0 else self.error_go
+                self.error_go = self.pz - self.aim
                 error_turn = self.px
-                rospy.loginfo('[{}],[{}],[{}]'.format(self.pz, self.px, error_go))
+                rospy.loginfo('[{}],[{}],[{}]'.format(self.pz, self.px, self.error_go))
                 cmd = Twist()
-                cmd.linear.x = 0.3 if self.kp_go * error_go > 0.3 else self.kp_go * error_go
+                cmd.linear.x = 0.3 if self.kp_go * self.error_go > 0.3 else self.kp_go * self.error_go + self.td_go * (
+                        self.error_go - last_error)
                 cmd.angular.z = -1 * self.kp_turn * error_turn if (math.fabs(error_turn) > 0.2) else 0
                 self.speed.publish(cmd)
             else:
