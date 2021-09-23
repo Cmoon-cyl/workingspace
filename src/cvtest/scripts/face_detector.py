@@ -34,8 +34,8 @@ class faceDetector:
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             frame = np.array(cv_image, dtype=np.uint8)
-        except EnvironmentError, e:
-            pass
+        # except EnvironmentError, e:
+        #     pass
 
         grey_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         grey_image = cv2.equalizeHist(grey_image)
@@ -44,7 +44,7 @@ class faceDetector:
         if len(faces_result) > 0:
             for face in faces_result:
                 x, y, w, h = face
-                cv2.rectangle(cv_image, (x, y), (x+w, y+h), self.color, 2)
+                cv2.rectangle(cv_image, (x, y), (x + w, y + h), self.color, 2)
 
         self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 

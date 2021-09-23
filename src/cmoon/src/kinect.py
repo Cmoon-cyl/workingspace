@@ -27,7 +27,9 @@ class Main:
     def cv_change(self, image):
         img = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
         rgb = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
-        self.rgb.publish(rgb)
+        # self.rgb.publish(rgb)
+        cv2.imshow('yolo', rgb)
+        cv2.waitKey(0)
 
 
 if __name__ == '__main__':
