@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: Image
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -436,4 +436,4 @@ Window Geometry:
     collapsed: true
   Width: 1200
   X: 694
-  Y: 54
+  Y: 16

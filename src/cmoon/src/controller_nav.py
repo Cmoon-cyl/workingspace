@@ -54,7 +54,7 @@ class Controller:
         self.goal = place.data  # 存入目标房间名字
         # for i in range(5):  # 循环五次
         # self.navigator.goto(place.data)  # 导航模块调用goto方法,传入去的地点名字符串即可导航区指定地点
-        self.base.turn(30)
+        # self.base.turn(30)
         self.get_goal()  # 检测垃圾
         # self.catch()  # 抓取垃圾
         # self.throw()  # 扔垃圾

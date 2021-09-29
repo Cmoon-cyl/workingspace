@@ -12,8 +12,8 @@ import numpy as np
 class Main:
     def __init__(self, name):
         rospy.init_node(name, anonymous=True)
-        rospy.Subscriber('/k4a/rgb/image_raw', Image, self.cv_change, queue_size=1, buff_size=52428800)  # 使用kinect实时检测
-        # rospy.Subscriber("/usb_cam/image_raw", Image, self.changeform, queue_size=1, buff_size=52428800)  # 使用电脑摄像头实时检测
+        # rospy.Subscriber('/k4a/rgb/image_raw', Image, self.cv_change, queue_size=1, buff_size=52428800)  # 使用kinect实时检测
+        rospy.Subscriber("/usb_cam/image_raw", Image, self.changeform, queue_size=1, buff_size=52428800)  # 使用电脑摄像头实时检测
         self.rgb = rospy.Publisher('/rgb_image', Image, queue_size=10)
         self.bgra_image = None
         self.rgb_image = Image()
@@ -27,9 +27,9 @@ class Main:
     def cv_change(self, image):
         img = np.frombuffer(image.data, dtype=np.uint8).reshape(image.height, image.width, -1)
         rgb = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
-        # self.rgb.publish(rgb)
-        cv2.imshow('yolo', rgb)
-        cv2.waitKey(0)
+        self.rgb.publish(rgb)
+        # cv2.imshow('yolo', rgb)
+        # cv2.waitKey(0)
 
 
 if __name__ == '__main__':

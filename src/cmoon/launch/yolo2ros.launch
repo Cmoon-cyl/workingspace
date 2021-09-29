@@ -2,6 +2,6 @@
 <launch>
     <!-- information -->
     <!--    <include file="$(find azure_kinect_ros_driver)/launch/rectify_test.launch"/>-->
-    <node pkg="cmoon" type="detector_point.py" name="yolo2ros" output="screen"/>
+    <node pkg="cmoon" type="detector-point.py" name="yolo2ros" output="screen"/>
 
 </launch>

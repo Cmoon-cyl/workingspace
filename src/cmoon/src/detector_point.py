@@ -83,7 +83,7 @@ class Detector:
                     # 坐标1mm 转变后除100变m
                     target_coorindate.append([cls[0], camera_coorindate[0].item() / 1000,
                                               camera_coorindate[1].item() / 1000,
-                                              camera_coorindate[2].item() / 1000
+                                              camera_coorindate[2].item() / 1000,
                                               ]
                                              )
                     point.result = cls[0]
@@ -108,7 +108,8 @@ class Detector:
         augment = 'store_true'
         conf_thres = 0.3
         iou_thres = 0.45
-        classes = (39, 64, 67)  # (0,1,2)
+        # classes = (0,39, 64, 67)  # (0,1,2)
+        classes = [i for i in range(80)]  # (0,1,2)
         agnostic_nms = 'store_true'
         img = torch.zeros((1, 3, self.imgsz, self.imgsz), device=self.device)  # init img
         _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None  # run once
@@ -154,6 +155,7 @@ class Detector:
                     if view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label = '%s %.2f' % (names[int(cls)], conf)
+
                         plot_one_box(xyxy, im0, label=label, color=[0, 255, 0], line_thickness=3)
                         # print("shape",im0.shape)
 
@@ -166,8 +168,12 @@ class Detector:
                     # cv2.imwrite(savename, ros_image)
                     # self.pdfmaker.write_img(savename)
         out_img = im0[:, :, [2, 1, 0]]
-        cv2.imshow('YOLOV5', out_img)
-        a = cv2.waitKey(1)
+        cv2.namedWindow('yolo', cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow('yolo', 640, 480)
+        cv2.resizeWindow('yolo', 1280, 640)
+        cv2.startWindowThread()
+        cv2.imshow('yolo', out_img)
+        cv2.waitKey(1)
         return coorindate_cls
 
     def loadimg(self, img):  # 接受opencv图片
