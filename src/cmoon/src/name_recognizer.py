@@ -40,7 +40,7 @@ class Recognizer:
         response = self.analyze()
         if response == 'I have caught ':
             self._soundplayer.say("Please say your name again. ")
-            self.get_cmd()
+            self.get_name()
         else:
             self.status = 1
             print(response)
