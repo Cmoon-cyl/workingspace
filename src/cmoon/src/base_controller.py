@@ -4,8 +4,8 @@
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
-from tf import transformations as tf
 import math
+
 
 class Base:
     def __init__(self):
@@ -44,9 +44,9 @@ class Base:
 
     def get_angle(self):
         """可调用获取现在的角度"""
-        eular = tf.euler_from_quaternion(self.quaternion)
-        self.angle = eular[2]
-        return eular[2]
+        eular = self.quad2euler(self.ox, self.oy, self.oz, self.ow)
+        self.angle = eular
+        return eular
 
     def turn(self, angle, kp=1.5, kd=0.5):
         """传入转的角度,单位°,正值左转,负值右转,范围0~180°"""
@@ -100,11 +100,21 @@ class Base:
         self.twist.angular.z = 0
         self.pub.publish(self.twist)
 
+    def quad2euler(self, x, y, z, w):
+        X = math.atan2(2 * (w * x + y * z), 1 - 2 * (x * x + y * y))
+        Y = math.asin(2 * (w * y - x * z))
+        Z = math.atan2(2 * (w * z + x * y), 1 - 2 * (z * z + y * y))
+        return Z
+
 
 if __name__ == '__main__':
     try:
         rospy.init_node('base', anonymous=True)
         base = Base()
+        # while not rospy.is_shutdown():
+        #     base.get_angle()
+        #     base.rotate(1.0)
+
         for i in range(10):
             degree = input('Input degree:')
             base.turn(float(degree))

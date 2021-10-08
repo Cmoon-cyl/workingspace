@@ -8,6 +8,7 @@ from aip import AipBodyAnalysis, AipFace
 import base64
 import os
 from pyKinectAzure import pyKinectAzure, _k4a
+import time
 
 
 class Detector(object):
@@ -89,6 +90,7 @@ class BodyDetector(Detector):
         for items in attributes:
             attr = attr + items + ','
         image = self.get_file_content(path)
+        self.client.bodyAttr(image)
         options = {}
         # options["type"] = "gender,age,glasses,upper_color,upper_wear"
         options["type"] = attr
@@ -127,6 +129,8 @@ class FaceDetector(Detector):
 
         image = self.get_file_content(path)
         imageType = "BASE64"
+
+        """ 调用人脸检测 """
         self.client.detect(image, imageType)
 
         """ 如果有可选参数 """
@@ -139,11 +143,9 @@ class FaceDetector(Detector):
         """ 带参数调用人脸检测 """
         outcome = self.client.detect(image, imageType, options)
         result = {}
-        if outcome['error_code'] == 0:
-            result = {}
-            # result['location'] = outcome['result']['face_list'][0]['location']
-            for items in attributes:
-                result[items] = outcome['result']['face_list'][0][items]
+        result['location'] = outcome['result']['face_list'][0]['location']
+        for items in attributes:
+            result[items] = outcome['result']['face_list'][0][items]
 
         return result
 
@@ -156,16 +158,18 @@ if __name__ == '__main__':
         # result = k4a.detect(['age', 'gender', 'glasses'])
         # print(result)
 
-        face = FaceDetector()
-        result1 = face.k4a_detect(attributes=['age', 'gender', 'glasses'])
-
+        # face = FaceDetector()
+        # print(1)
+        # result1 = face.detect(attributes=['age', 'gender', 'glasses'])
+        # print(2)
         body = BodyDetector()
-        result2 = body.k4a_detect(
-            ['age', 'gender', 'upper_wear', 'upper_wear_texture', 'upper_wear_fg', 'upper_color',
-             'lower_wear', 'lower_color', 'face_mask', 'glasses', 'headwear', 'bag'])
-
-        print(result1)
-        print(result2)
+        # result2 = body.detect(
+        #     ['age', 'gender', 'upper_wear', 'upper_wear_texture', 'upper_wear_fg', 'upper_color',
+        #      'lower_wear', 'lower_color', 'face_mask', 'glasses', 'headwear', 'bag'])
+        result0 = body.get_attr('/home/cmoon/workingspace/src/cmoon/photo/photo.jpg', ['age', 'gender'])
+        print(result0)
+        # print(result1)
+        # print(result2)
 
         # rospy.spin()
     except rospy.ROSInterruptException:

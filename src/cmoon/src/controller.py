@@ -1,14 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: UTF-8 
 # Created by Cmoon
 
 import rospy
 from navigator import Navigator  # 导航模块
 from soundplayer import Soundplayer  # 语音合成模块
-from name_recognizer import Recognizer  # 语音识别模块和分析模块
+from voice_recognizer import Recognizer  # 语音识别模块和分析模块
 from pdfmaker import Pdfmaker  # pdf制作模块
 from base_controller import Base  # 底盘运动模块
 from std_msgs.msg import String  # String类型消息,从String.data中可获得信息
+from Detector import BodyDetector, FaceDetector
 
 LOCATION = {  # 储存导航路径点
     'door': [[-4.352973, -6.186659, 0.000000], [0.000000, 0.000000, -0.202218, -0.979341]],
@@ -40,7 +41,9 @@ class Controller:
         self.recognizer = Recognizer()  # 实例化语音识别和逻辑判断模块
         self.pdfmaker = Pdfmaker()  # 实例化pdf导出模块
         self.base = Base()  # 实例化移动底盘模块
-        self.soundplayer.say("I have caught you. Please tell me your name.", 3)  # 语音合成模块调用play方法传入字符串即可播放
+        self.body = BodyDetector()
+        self.face = FaceDetector()
+        self.soundplayer.say("Please give me the command.", 3)  # 语音合成模块调用play方法传入字符串即可播放
         self.recognizer.get_cmd()  # 获取一次语音命令
         self.result = None  # yolo检测的结果
         self.goal = None  # 要去清理垃圾的房间
@@ -50,6 +53,14 @@ class Controller:
         """订阅start signal的回调函数,传入的place是String类型消息 .data可以获取传来的信息,即目标房间"""
         self.goal = place.data  # 存入目标房间名字
         for i in range(5):  # 循环五次
+            result0 = self.body.get_attr('/home/cmoon/workingspace/src/cmoon/photo/photo.jpg', ['age', 'gender'])
+            print(result0)
+            result2 = self.face.get_attr('/home/cmoon/workingspace/src/cmoon/photo/photo.jpg', ['age', 'gender'])
+            print(result2)
+            result = self.face.detect(['age', 'gender'])
+            print(result)
+            result1 = self.body.detect(['age', 'gender'])
+            print(result1)
             self.navigator.goto(place.data)  # 导航模块调用goto方法,传入去的地点名字符串即可导航区指定地点
             self.detect()  # 检测垃圾
             self.catch()  # 抓取垃圾

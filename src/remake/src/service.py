@@ -10,6 +10,7 @@ class Sum:
         rospy.init_node(name)
         rospy.Service('add', cmoon, self.returnsum)
         rospy.loginfo('Service on')
+
     def returnsum(self, req):
         num1 = req.num1
         num2 = req.num2
