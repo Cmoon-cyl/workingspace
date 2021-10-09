@@ -1,0 +1,8 @@
+prefix=/home/cmoon/workingspace/install
+
+Name: pykinect
+Description: Description of pykinect
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

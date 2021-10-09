@@ -41,22 +41,44 @@ class Detector(object):
         self.k4a.device_close()
         return path
 
-    def take_photo(self):
+    def take_photo(self, device='camera'):
         """电脑摄像头拍照保存"""
-        cap = cv2.VideoCapture(2, cv2.CAP_DSHOW)
-        cap.open(0)
-        flag, frame = cap.read()
-        path = self.photopath + '/photo.jpg'
-        cv2.imwrite(path, frame)
-        cap.release()
+        if device == 'k4a':
+            self.modulePath = r'/usr/lib/x86_64-linux-gnu/libk4a.so'
+            self.k4a = pyKinectAzure(self.modulePath)
+            self.k4a.device_open()
+            device_config = self.k4a.config
+            device_config.color_resolution = _k4a.K4A_COLOR_RESOLUTION_1080P
+            print(device_config)
+            self.k4a.device_start_cameras(device_config)
+            path = self.photopath + '/photo.jpg'
+            while True:
+                self.k4a.device_get_capture()
+                color_image_handle = self.k4a.capture_get_color_image()
+                if color_image_handle:
+                    color_image = self.k4a.image_convert_to_numpy(color_image_handle)
+                    cv2.imwrite(path, color_image)
+                    if 'photo.jpg' in os.listdir(self.photopath):
+                        self.k4a.image_release(color_image_handle)
+                        self.k4a.capture_release()
+                        break
+            self.k4a.device_stop_cameras()
+            self.k4a.device_close()
+        else:
+            cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            cap.open(0)
+            flag, frame = cap.read()
+            path = self.photopath + '/photo.jpg'
+            cv2.imwrite(path, frame)
+            cap.release()
         return path
 
     def get_attr(self, *key):
         return
 
-    def detect(self, attributes=None, *keys):
+    def detect(self, attributes=None, device='camera', *keys):
         """电脑摄像头拍照检测"""
-        path = self.take_photo()
+        path = self.take_photo(device)
         print(path)
         result = self.get_attr(path, attributes)
         return result
@@ -157,12 +179,12 @@ if __name__ == '__main__':
         # print(result)
 
         face = FaceDetector()
-        result1 = face.k4a_detect(attributes=['age', 'gender', 'glasses'])
+        result1 = face.detect(attributes=['age', 'gender', 'glasses', 'beauty'], device='k4a')
 
         body = BodyDetector()
-        result2 = body.k4a_detect(
+        result2 = body.detect(
             ['age', 'gender', 'upper_wear', 'upper_wear_texture', 'upper_wear_fg', 'upper_color',
-             'lower_wear', 'lower_color', 'face_mask', 'glasses', 'headwear', 'bag'])
+             'lower_wear', 'lower_color', 'face_mask', 'glasses', 'headwear', 'bag'], device='k4a')
 
         print(result1)
         print(result2)

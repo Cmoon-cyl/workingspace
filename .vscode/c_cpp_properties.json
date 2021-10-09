@@ -1,0 +1,38 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/cmoon/catkin_workspace/install/include/**",
+        "/home/cmoon/dogkin_ws/devel/include/**",
+        "/home/cmoon/workingspace/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/cmoon/dogkin_ws/src/Azure_Kinect_ROS_Driver/include/**",
+        "/home/cmoon/workingspace/src/cmoon/include/**",
+        "/home/cmoon/workingspace/src/dashgo/dashgo_driver/include/**",
+        "/home/cmoon/workingspace/src/dashgo/dashgo_tools/include/**",
+        "/home/cmoon/workingspace/src/f1tenth_simulator/include/**",
+        "/home/cmoon/dogkin_ws/src/freenect_stack/freenect_camera/include/**",
+        "/home/cmoon/dogkin_ws/src/gpsr_2020/include/**",
+        "/home/cmoon/workingspace/src/homework/include/**",
+        "/home/cmoon/workingspace/src/opencv/include/**",
+        "/home/cmoon/workingspace/src/openslam_gmapping/include/**",
+        "/home/cmoon/dogkin_ws/src/receptionist/include/**",
+        "/home/cmoon/workingspace/src/remake/include/**",
+        "/home/cmoon/dogkin_ws/src/robocup/include/**",
+        "/home/cmoon/workingspace/src/robot_voice/include/**",
+        "/home/cmoon/workingspace/src/ros_yolo/include/**",
+        "/home/cmoon/workingspace/src/test/include/**",
+        "/home/cmoon/workingspace/src/tianracer/tianracer_core/include/**",
+        "/home/cmoon/workingspace/src/uvc_cam/include/**",
+        "/home/cmoon/dogkin_ws/src/xfei_asr/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
